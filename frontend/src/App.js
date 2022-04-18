@@ -14,16 +14,18 @@ import Register from "./components/users/Register";
 import { loadUser } from './components/actions/userActions'
 import store from './store'
 import { useEffect } from "react";
+import Profile from "./components/users/Profile";
+import ProtectedRoutes from "./components/routes/ProtectedRoutes";
 
 
 function App() {
   
   
-  // const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //  store.dispatch(loadUser()) 
-  // },[])
+
+  useEffect(() => {
+   store.dispatch(loadUser()) 
+  },[])
   return (
     <>
 
@@ -33,10 +35,13 @@ function App() {
         <div className="container container-fluid">
       <Switch>
             <Route exact path="/" component={Home } />
+            <Route exact path="/search/:keyword" component={Home } />
+            <Route exact path="/product/:id" component={ProductDetails} />
+            
+            
             <Route exact path="/login" component={Login } />
             <Route exact path="/register" component={Register } />
-            <Route exact path="/search/:keyword" component={Home } />
-            <Route exact path="/product/:id" component={ProductDetails } />
+            <ProtectedRoutes exact path="/me" component={Profile } />
     </Switch>
         </div>
         <Footer />

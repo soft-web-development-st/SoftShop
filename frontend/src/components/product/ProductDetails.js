@@ -7,8 +7,12 @@ import MetaData from "../layouts/MetaData";
 import { Fragment } from "react";
 import { useParams } from "react-router-dom";
 import { Carousel, CarouselItem } from "react-bootstrap";
+import { useState } from "react";
+import {addToCart}  from '../actions/cartActions'
 
 const ProductDetails = () => {
+  const [quantity, setQuantity] = useState(1);
+
   const dispatch = useDispatch();
   const { loading, error, product } = useSelector(
     (state) => state.productDetails
@@ -26,13 +30,38 @@ const ProductDetails = () => {
     }
   }, [dispatch, alert, error, params.id]);
 
+  const increaseQty = () => {
+    const count = document.querySelector(".count");
+    if (count.valueAsNumber >= product.stock) {
+      alert.info('Cannot Order More than Available Stock')
+      return;
+    }
+    const qty = count.valueAsNumber + 1;
+    setQuantity(qty);
+  };
+
+  const decreaseQty = () => {
+    const count = document.querySelector(".count");
+    if (count.valueAsNumber <= 1) {
+      alert.error('Invalid Option')
+      return;
+    }
+    const qty = count.valueAsNumber - 1;
+    setQuantity(qty);
+  };
+
+  const addItemToCart = () => {
+    dispatch(addToCart(params.id, quantity))
+    alert.success("Item Added To Cart")
+  }
+
   return (
     <Fragment>
       {loading ? (
         <Loader />
       ) : (
-          <Fragment>
-            <MetaData title={ product.title}/>
+        <Fragment>
+          <MetaData title={product.title} />
           <div className="row f-flex justify-content-around">
             <div className="col-12 col-lg-5 img-fluid" id="product_image">
               <Carousel pause="hover">
@@ -67,21 +96,27 @@ const ProductDetails = () => {
 
               <p id="product_price">${product.price}</p>
               <div className="stockCounter d-inline">
-                <span className="btn btn-danger minus">-</span>
+                <span className="btn btn-danger minus" onClick={decreaseQty}>
+                  -
+                </span>
 
                 <input
                   type="number"
                   className="form-control count d-inline"
-                  value="1"
+                  value={quantity}
                   readOnly
                 />
 
-                <span className="btn btn-primary plus">+</span>
+                <span className="btn btn-primary plus" onClick={increaseQty}>
+                  +
+                </span>
               </div>
               <button
                 type="button"
                 id="cart_btn"
-                className="btn btn-primary d-inline ml-4"
+                  className="btn btn-primary d-inline ml-4"
+                  disabled={product.stock === 0}
+                  onClick={addItemToCart}
               >
                 Add to Cart
               </button>

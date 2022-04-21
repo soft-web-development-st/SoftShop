@@ -1,23 +1,26 @@
 import React from "react";
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Badge, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Search from "./Search";
 import { Route, Link } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 
 import { logout } from "../actions/userActions";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
+import { useAlert } from "react-alert";
 
-const Header = () => {
+const Header = ({ history }) => {
   const alert = useAlert();
   const dispatch = useDispatch();
-  const { user, loading } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
+   const { cartItems } = useSelector((state) => state.cart);
 
   const logoutHandler = () => {
     dispatch(logout());
-    toast.error("Logout Successfully");
+    alert.error("Logout Successfully");
+    history.push("/login");
   };
 
   return (
@@ -33,15 +36,25 @@ const Header = () => {
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link href="#features">Features</Nav.Link>
-              <Nav.Link href="#pricing">Pricing</Nav.Link>
+
+              <Link
+                style={{ textDecoration: "none", color: "gray" }}
+                className="mt-2"
+                to="/cart"
+              >
+                Cart
+                <Badge style={{marginLeft:'5px'}} bg="secondary">{cartItems.length}</Badge>
+              </Link>
             </Nav>
-            <Nav>
+
+            <Nav className="me-auto">
               <Route render={({ history }) => <Search history={history} />} />
             </Nav>
+
             <Nav>
               {user ? (
                 <NavDropdown
-                  style={{ textTransform: "capitalize" }}
+                  style={{ textTransform: "capitalize", marginLeft: ".5rem" }}
                   title={user.name}
                   id="collasible-nav-dropdown"
                 >
@@ -85,22 +98,23 @@ const Header = () => {
                 </NavDropdown>
               ) : (
                 <>
-                  <Nav.Link eventKey={2} href="">
-                    <Link
-                      to="/login"
-                      style={{ textDecoration: "none", color: "gray" }}
-                    >
-                      Login
-                    </Link>
-                  </Nav.Link>
-                  <Nav.Link eventKey={2} href="">
-                    <Link
-                      to="/register"
-                      style={{ textDecoration: "none", color: "gray" }}
-                    >
-                      Register
-                    </Link>
-                  </Nav.Link>
+                  <Link
+                    to="/login"
+                    style={{
+                      textDecoration: "none",
+                      color: "gray",
+                      marginRight: "1rem",
+                      marginLeft: ".5rem",
+                    }}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    style={{ textDecoration: "none", color: "gray" }}
+                    to="/register"
+                  >
+                    Register
+                  </Link>
                 </>
               )}
             </Nav>

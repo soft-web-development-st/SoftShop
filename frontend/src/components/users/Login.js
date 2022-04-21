@@ -23,8 +23,10 @@ const Login = ({ history }) => {
     if (isAuthenticated) {
       history.push("/");
     }
+
     if (error) {
       alert.error(error);
+      console.log(error);
       dispatch(clearErrors);
     }
   }, [dispatch, alert, isAuthenticated, error, history]);
@@ -72,7 +74,8 @@ const Login = ({ history }) => {
                 <button
                   id="login_button"
                   type="submit"
-                  className="btn btn-block py-3"
+                    className="btn btn-block py-3"
+                    disabled={!email && !password}
                 >
                   LOGIN
                 </button>
